@@ -90,11 +90,34 @@ class MyFoldersTableViewController: UITableViewController {
   
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        return cell
+                let item = listOfContents[indexPath.row]
+                
+                var isFolder: ObjCBool = false
+                fileManager.fileExists(atPath: item.path, isDirectory: &isFolder)
+                if isFolder.boolValue {
+                    cell.detailTextLabel?.text = "Folder"
+           //         cell.textLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+                } else {
+                    cell.detailTextLabel?.text = ""
+                }
+                cell.textLabel?.text = item.lastPathComponent
+                
+                return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    }
+            let item = listOfContents[indexPath.row]
+            
+            var isFolder: ObjCBool = false
+            fileManager.fileExists(atPath: item.path, isDirectory: &isFolder)
+            if isFolder.boolValue {
+                let tvc = storyboard?.instantiateViewController(withIdentifier: "TableVC") as! MyFoldersTableViewController
+                tvc.url = item
+                navigationController?.pushViewController(tvc, animated: true)
+            } else {
+                tableView.deselectRow(at: indexPath, animated: true)
+            }
+        }
   
 }
 
