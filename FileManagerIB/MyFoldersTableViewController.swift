@@ -20,6 +20,27 @@ class MyFoldersTableViewController: UITableViewController {
     }
 
     @IBAction func addNewFolder(_ sender: Any) {
+        let alertController = UIAlertController(title: "Create new folder", message: nil, preferredStyle: .alert)
+        alertController.addTextField { textfield in
+            textfield.placeholder = "Enter folder name"
+        }
+        let createAction = UIAlertAction(title: "Create", style: .default) { action in
+            
+            if let folderName = alertController.textFields?[0].text,
+               folderName != "" {
+                let newURL = self.url.appendingPathComponent(folderName)
+                do {
+                    try self.fileManager.createDirectory(at: newURL, withIntermediateDirectories: false)
+                } catch {
+                    self.showErrorAlert(text: "Unable to create new folder")
+                }
+                self.tableView.reloadData()
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        alertController.addAction(createAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
     }
     
     @IBAction func addNewFile(_ sender: Any) {
@@ -27,6 +48,13 @@ class MyFoldersTableViewController: UITableViewController {
     
     @IBAction func addNewImage(_ sender: Any) {
     }
+    
+    private func showErrorAlert(text: String) {
+            let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+            alert.addAction(cancelAction)
+            present(alert, animated: true)
+        }
  
     // MARK: - Table view data source
 
